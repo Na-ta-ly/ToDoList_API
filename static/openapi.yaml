@@ -1,0 +1,182 @@
+openapi: 3.0.3
+info:
+  title: Swagger ToDoList - OpenAPI 3.0
+  description: |-
+    This is a ToDoList Server based on the OpenAPI 3.0 specification.
+  version: 1.0.00
+tags:
+  - name: tasks
+    description: Operations with tasks list
+  - name: tasks_id
+    description: Operations with a single task
+paths:
+  /tasks:
+    post:
+      tags:
+        - tasks
+      summary: Create a new task
+      description: Create a new task with a given title and description
+      operationId: createTask
+      parameters:
+        - name: title
+          in: query
+          description: Title for a new task
+          required: true
+          schema:
+            type: string
+        - name: description
+          in: query
+          description: Description for a new task
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Task successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '409':
+          description: Task with such title already exists
+        '400':
+          description: Insufficient values
+        '503':
+          description: Base unavailable
+    get:
+      tags:
+        - tasks
+      summary: All tasks in base
+      description: Show all tasks already added in base
+      operationId: listTask
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'          
+        '400':
+          description: Invalid input
+        '503':
+          description: Base unavailable
+  /tasks/{id}:
+    put:
+      tags:
+        - tasks_id
+      summary: Update existing task
+      description: Update a task with a given id with new title and description
+      operationId: updateTask
+      parameters:
+        - name: id
+          in: path
+          description: Task id
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: title
+          in: query
+          description: Title for the new task
+          schema:
+            type: string
+        - name: description
+          in: query
+          description: Description for the new task
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task was not found
+        '400':
+          description: Insufficient values
+        '503':
+          description: Base unavailable
+    delete:
+      tags:
+        - tasks_id
+      summary: Delete existing task 
+      description: Delete a task with a given id
+      operationId: deleteTask
+      parameters:
+        - name: id
+          in: path
+          description: Task id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '404':
+          description: Task was not found
+        '503':
+          description: Base unavailable
+    get:
+      tags:
+        - tasks_id
+      summary: Show existing task
+      description: Show a task with a given id
+      operationId: showTask
+      parameters:
+        - name: id
+          in: path
+          description: Task id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Task was not found
+        '503':
+          description: Base unavailable
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        title:
+          type: string
+          example: new task
+        description:
+          type: string
+          example: one very interesting task
+        creadted_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+      xml:
+        name: '##default'
